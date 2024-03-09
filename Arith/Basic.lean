@@ -1,14 +1,20 @@
+inductive Op where
+  | add
+  | sub
+  | mul
+  | div
+
 inductive Expr where
   | num (n : Int)
-  | plus (e1 : Expr) (e2 : Expr)
-  | minus (e1 : Expr) (e2 : Expr)
-  | mult (e1 : Expr) (e2 : Expr)
-  | div (e1 : Expr) (e2 : Expr)
+  | op  (op : Op) (e1 : Expr) (e2 : Expr)
 
 def eval (e : Expr) : Int := 
   match e with 
-  | Expr.num n => n
-  | Expr.plus e1 e2 => (eval e1) + (eval e2)
-  | Expr.minus e1 e2 => (eval e1) - (eval e2)
-  | Expr.mult e1 e2 => (eval e1) * (eval e2)
-  | Expr.div e1 e2 => (eval e1) / (eval e2)
+  | .num n => n
+  | .op op e1 e2 =>
+    match op with
+    | .add => (eval e1) + (eval e2)
+    | .sub => (eval e1) - (eval e2)
+    | .mul => (eval e1) * (eval e2)
+    | .div => (eval e1) / (eval e2)
+
