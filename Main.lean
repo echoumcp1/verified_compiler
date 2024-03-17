@@ -1,4 +1,7 @@
 import «Arith»
+open Expr
 
 def main : IO Unit :=
-  IO.println (eval exampl)
+  match (eval exampl) with
+  | .num n => IO.println n
+  | _ => IO.println "eval failure"
