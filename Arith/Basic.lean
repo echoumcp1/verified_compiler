@@ -1,25 +1,43 @@
-inductive Op where
-  | add
-  | sub
-  | mul
-  | div
+inductive Op0 where
+  | peekbyte
+  | readbyte
 deriving Repr
+
+inductive Op1 where
+  | add1
+  | sub1
+  | zeroHuh
+  | charHuh
+  | inttochar
+  | chartoint
+  | writeByte
+  | eofobjecthuh
+  | neg
+  | abs
+  | inthuh
+  | boolhuh
+deriving Repr
+
+inductive Op2 where
+  | sub
+deriving Repr
+
+inductive OpN where
+  | add
+deriving Repr
+
+abbrev Id := String
 
 inductive Expr where
-  | num (n : Int)
-  | op  (op : Op) (e1 : Expr) (e2 : Expr) 
+  | integer (n : Int)
+  | boolean (b : Bool)
+  | character (c : Char)
+  | prim0  (op : Op0)
+  | prim1  (op : Op1) (e : Expr)
+  | prim2  (op : Op2) (e1 : Expr) (e2 : Expr)
+  | primn  (op : OpN) (es : List Expr)
+  | letstd (ids : List Id) (es : List Expr) (body : Expr)
+  | letstar (ids : List Id) (es : List Expr) (body : Expr)
+  | begin  (e1 : Expr) (e2 : Expr)
+  | var (id : Id)
 deriving Repr
-
-def eval (e : Expr) : Expr := 
-  match e with 
-  | .num n => .num n
-  | .op op (.num n1) (.num n2) =>
-    match op with
-    | .add => .num (n1 + n2)
-    | .sub => .num (n1 - n2)
-    | .mul => .num (n1 * n2)
-    | .div => .num (n1 / n2)
-  | .op op (.num n) e => .op op (.num n) (eval e)
-  | .op op e1 e2 => .op op (eval e1) e2
-  
-
