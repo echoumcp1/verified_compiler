@@ -26,7 +26,7 @@ inductive OpN where
   | add
 deriving Repr
 
-abbrev Id := String
+abbrev ID := String
 
 inductive Expr where
   | integer (n : Int)
@@ -36,8 +36,8 @@ inductive Expr where
   | prim1  (op : Op1) (e : Expr)
   | prim2  (op : Op2) (e1 : Expr) (e2 : Expr)
   | primn  (op : OpN) (es : List Expr)
-  | letstd (ids : List Id) (es : List Expr) (body : Expr)
-  | letstar (ids : List Id) (es : List Expr) (body : Expr)
+  | letstd (ids : List ID) (es : List Expr) (body : Expr)
+  | letstar (ids : List ID) (es : List Expr) (body : Expr)
   | begin  (e1 : Expr) (e2 : Expr)
-  | var (id : Id)
+  | var (id : ID)
 deriving Repr
