@@ -1,4 +1,5 @@
 import «Arith».AST
+import «Arith».Types
 open Convertible
 
 inductive Value where

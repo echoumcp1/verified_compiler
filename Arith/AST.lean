@@ -29,7 +29,7 @@ deriving Repr
 abbrev ID := String
 
 inductive Expr where
-  | integer (n : Int)
+  | integer (n : Nat)
   | boolean (b : Bool)
   | character (c : Char)
   | prim0  (op : Op0)
