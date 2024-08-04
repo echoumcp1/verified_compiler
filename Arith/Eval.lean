@@ -1,5 +1,4 @@
 import «Arith».AST
-import «Arith».Types
 open Convertible
 
 inductive Value where
@@ -10,20 +9,20 @@ inductive Value where
 abbrev Env := List (ID × Value)
 
 @[simp] def lookup_env (r : Env) (x : ID) : Except String Value :=
-  match r with 
+  match r with
   | [] => throw s!"variable {x} not found in environment"
   | (id, v)::rs => if id == x then (return v) else lookup_env rs x
 
 open Value
 
 @[simp] def interpPrim1 (op : Op1) (e : Value) : Except String Value :=
-  match op with 
-  | .add1 => 
-      (match e with 
+  match op with
+  | .add1 =>
+      (match e with
       | .num n => return (.num (n + 1))
       | _ => throw s!"add1 requires nat argument")
-  | .sub1 => 
-    (match e with 
+  | .sub1 =>
+    (match e with
       | .num n => return (.num (n - 1))
       | _ => throw s!"sub1 requires nat argument")
   | _ => return (.num 1)
@@ -55,7 +54,7 @@ end
 @[simp] def interp (e : Expr) : Nat :=
   match interp_env e [] with
   | .error _ => val_void
-  | .ok res => (match res with 
+  | .ok res => (match res with
     | .num n => valToBits n
     | .bool b => valToBits b
     | .char c => valToBits c)

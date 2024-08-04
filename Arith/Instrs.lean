@@ -1,5 +1,3 @@
-import «Arith».Types
-
 abbrev Reg := Nat
 -- def Reg := Nat
 
