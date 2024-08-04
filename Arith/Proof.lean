@@ -28,7 +28,4 @@ theorem correctness:
                       bind, Except.bind, StateT.bind,
                       liftM, monadLift, MonadLift.monadLift, StateT.lift,
                       Convertible.valToBits]
-  | .prim1 (Op1.add1) e => by
-    have ih := correctness e
-    simp
   | _ => by sorry

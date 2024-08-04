@@ -5,6 +5,10 @@ def val_false := 7
 def val_void := 15
 
 def type_char := 1
+def type_int := 0
+
+def int_mask := 1
+def char_mask := 3
 
 class Convertible (α : Type) where
   valToBits : α → Nat
