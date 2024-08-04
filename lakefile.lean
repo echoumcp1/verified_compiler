@@ -10,3 +10,5 @@ lean_lib «Arith» where
 @[default_target]
 lean_exe «arith» where
   root := `Main
+
+require mathlib from git "https://github.com/leanprover-community/mathlib4"

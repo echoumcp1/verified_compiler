@@ -1,7 +1,10 @@
 import «Arith»
 open Expr
 
-def main : IO Unit :=
-  match (eval exampl) with
-  | .num n => IO.println n
-  | _ => IO.println "eval failure"
+def main : IO Unit := do
+  IO.println s!"interpreted: {interp exampl}"
+  match (compile exampl) with
+  | Except.ok prog => do
+      IO.println (List.map repr prog)
+      IO.println s!"compiled: {exec prog}"
+  | _ => IO.println ("compile failed :(")
