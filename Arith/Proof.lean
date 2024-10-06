@@ -2,30 +2,35 @@ import «Arith».Compile
 import «Arith».Eval
 import «Arith».Instrs
 import «Arith».AST
+import Arith.Machine
 import Aesop
 
 open Op1
 
-theorem concat_prog:
-  ∀ (e : Expr) (prog' : Prog) (config : Config),
-    match (compile e) with
-    | Except.ok prog => let (_, config') := exec1 prog config
-                        exec1 (prog ++ prog') config = exec1 prog' config'
-    | Except.error _ => true
-  | _ => by sorry
+open Lean Parser Tactic
+
+syntax "msimp" (" [" withoutPosition((simpStar <|> simpErase <|> simpLemma),*) "]")? : tactic
+
+macro_rules
+  |`(tactic|msimp) => `(tactic|simp [pure, Except.pure,StateT.pure,bind,Except.bind,StateT.bind,liftM,monadLift,MonadLift.monadLift
+  ,StateT.lift, Convertible.valToBits, MonadState.get, MonadStateOf.set])
+  |`(tactic|msimp [$t]) => `(tactic|simp [Except.pure,StateT.pure,bind,Except.bind,StateT.bind,liftM,monadLift,MonadLift.monadLift
+  ,StateT.lift,Convertible.valToBits,$t])
 
 theorem correctness:
-    ∀ (e : Expr),
+    ∀ (e : _root_.Expr),
       match (compile e) with
-      | Except.ok prog => (exec prog = interp e)
-                          --let (prog', (res, _, _)) := exec1 prog (0, 0, empty)
-                          --((prog' == []) -> res == interp e) || ((prog' != []) -> interp e == val_void)
+      | Except.ok prog => (exec prog = exec (compileBits (interp e)))
       | Except.error _   => interp e = val_void
-  | .integer n => by simp [pure, Except.pure, StateT.pure, Convertible.valToBits]
-  | .boolean b => by simp [pure, Except.pure, StateT.pure, Convertible.valToBits]
-  | .character c => by simp [pure, Except.pure, StateT.pure, Convertible.valToBits]
-  | .var x => by simp [Except.pure, StateT.pure,
-                      bind, Except.bind, StateT.bind,
-                      liftM, monadLift, MonadLift.monadLift, StateT.lift,
-                      Convertible.valToBits]
+  | .integer n => by msimp
+  | .boolean b => by msimp
+  | .character c => by msimp
+  | .var x => by msimp
+  | .prim1 add1 e1 => by
+    induction e1 with
+    | integer n =>
+      repeat split
+      {
+        
+      }
   | _ => by sorry

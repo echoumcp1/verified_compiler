@@ -26,9 +26,8 @@ open Value
     (match e with
       | .num n => return (.num (n - 1))
       | _ => throw s!"sub1 requires nat argument")
-  | _ => return (.num 1)
+  | _ => return (num 1)
 
-mutual
 @[simp] def interp_env (e : Expr) (r : Env) : Except String Value :=
   match e with
   | .integer n => return (num n)
@@ -38,19 +37,10 @@ mutual
   | .prim1 op e => do
       let v <- interp_env e r
       interpPrim1 op v
-  | .letstd ids es body => do
-      let vs <- interp_star es r
-      interp_env body ((List.zip ids vs) ++ r)
+  | .letstd id e body => do
+      let v <- interp_env e r
+      interp_env body ((id, v)::r)
   | _ => return (num 1)
-
-@[simp] def interp_star (es : List Expr) (r : Env) : Except String (List Value) :=
-  match es with
-  | []    => return []
-  | e::es => do
-    let v <- interp_env e r
-    let vs <- interp_star es r
-    return (v::vs)
-end
 
 @[simp] def interp (e : Expr) : Nat :=
   match interp_env e [] with
