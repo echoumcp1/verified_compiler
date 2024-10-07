@@ -1,3 +1,5 @@
+import Aesop
+
 inductive instr where
 | Push (n : Int)
 | Plus
@@ -12,7 +14,7 @@ inductive aexp where
   | sub1 (a1 : aexp)
   | neg (a1 : aexp)
 
-def aeval (e : aexp) : Int :=
+@[simp] def aeval (e : aexp) : Int :=
   match e with
   | .integer n => n
   | .plus a1 a2 => (aeval a1) + (aeval a2)
@@ -20,7 +22,6 @@ def aeval (e : aexp) : Int :=
   | .add1 a1 => (aeval a1) + 1
   | .sub1 a1 => (aeval a1) - 1
   | .neg a1 =>  0 - (aeval a1)
-
 
 @[simp] def stackExecA (stack : List Int) (prog : List instr) : List Int :=
   match prog with
@@ -46,13 +47,10 @@ open aexp
   | .sub1 a1 => (stackCompile a1) ++ [Push 1, Minus]
   | .neg a1 => [Push 0] ++ (stackCompile a1) ++ [Minus]
 
-theorem executeAppend (p1 p2 : List instr) (stack : List Int) :
+@[simp] theorem executeAppend (p1 p2 : List instr) (stack : List Int) :
   stackExecA stack (p1 ++ p2) = stackExecA (stackExecA stack p1) p2 :=
   by
-  revert stack
-  revert p2
-  induction p1 with
-  intros p2 stack
+  induction p1 generalizing p2 stack with
   | nil => rfl
   | cons a p1 IHp1 =>
     cases a <;>
@@ -64,29 +62,7 @@ theorem executeAppend (p1 p2 : List instr) (stack : List Int) :
 
 theorem stackCompileCorrectH (stack : List Int) (e : aexp) :
   stackExecA stack (stackCompile e) = aeval e :: stack :=
-  by
-    revert stack
-    induction e with
-    intro stack <;> simp
-    | integer n =>
-      rfl
-    | plus e1 e2 IHe1 IHe2 =>
-      repeat (rewrite [executeAppend])
-      rewrite [IHe1, IHe2]
-      rfl
-    | minus e1 e2 IHe1 IHe2 =>
-      repeat (rewrite [executeAppend])
-      rewrite [IHe1, IHe2]
-      rfl
-    | add1 e1 IHe1 =>
-      rewrite [executeAppend, IHe1]
-      rfl
-    | sub1 e1 IHe1 =>
-      rewrite [executeAppend, IHe1]
-      rfl
-    | neg e1 IHe1 =>
-      rewrite [executeAppend, IHe1]
-      rfl
+  by induction e generalizing stack <;> simp <;> aesop
 
 theorem stackCompileCorrect (stack : List Int) (e : aexp) :
   stackExecA [] (stackCompile e) = [aeval e] :=
